@@ -1,5 +1,6 @@
 
 
+
 class NodoLista:
     def __init__(self, dato = None):
         self.dato=dato
@@ -44,7 +45,7 @@ class NodoLista:
         if actPos == getPos:
             dato = self.dato
         else:
-            dato = self.getDato(getPos, actPos +1)
+            dato = self.siguiente.getDato(getPos, actPos +1)
         return dato
     
     def buscarDato(self, datoABuscar, actPos = 0):
@@ -68,7 +69,10 @@ class NodoLista:
     def delete(self, deletePos, actPos = 0):
         
         if actPos == deletePos - 1:
-            self.siguiente = self.siguiente.siguiente
+            if self.siguiente == None:
+                self.siguiente = None
+            else:
+                self.siguiente = self.siguiente.siguiente
         else:
             dato = self.delete(deletePos, actPos +1)
             
@@ -81,4 +85,12 @@ class NodoLista:
         listaClon.append(self.dato)
         if self.tieneSiguiente():
             self.siguiente.clonar(listaClon)
+            
+    def deleteAll(self, pos = 1):
+        if not self.tieneSiguiente():
+            self.delete(pos)
+        else:
+            pos += 1
+            self.siguiente.deleteAll(pos)
+            
         

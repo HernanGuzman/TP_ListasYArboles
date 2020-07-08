@@ -74,10 +74,14 @@ class ListaEnlazada:
     
     '''ELIMINA UN DATO EN LA LISTA, PASANDO EL DATO QUE SE DESEA ELIMINAR'''    
     def eliminarDato(self, datoAEliminar):
-        if self.primero.dato == datoAEliminar:
-            self.primero = self.primero.siguiente
-        else:
-            self.primero.eliminarDato(datoAEliminar)
+        if not self.estaVacia():
+            if self.primero.dato == datoAEliminar:
+                if self.primero.siguiente == None:
+                    self.primero = None
+                else:
+                    self.primero = self.primero.siguiente
+            else:
+                self.primero.eliminarDato(datoAEliminar)
         
         
     def recPre(self):
@@ -88,5 +92,23 @@ class ListaEnlazada:
         listaClon = ListaEnlazada()
         if not self.estaVacia():
             self.primero.clonar(listaClon)
-        return listaClon       
+        return listaClon     
+    
+    def __repr__(self):
+        out = "["
+        aux = self.primero
+        while aux != None:
+            out +=  str(aux.dato) + " , " 
+            aux = aux.siguiente
+        out += " ]"
+        return out  
+    
+    def deleteAll(self):
+        if not self.estaVacia():
+            if self.len() == 1:
+                self.delete(0)
+            else:
+                self.primero.deleteAll()
+                
+            
         

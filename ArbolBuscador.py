@@ -99,46 +99,52 @@ class ArbolBuscador:
         SI EN LA LISTA QUE POSEE SE ENCUENTRA LA PAGINA WEB'''
         if not nodoExistente.listaPaginas.buscarDato(direccionWeb):
             self.agregarDirWeb(nodoExistente.listaPaginas, direccionWeb)
-        else:
-            raise Exception("La palabra y la direccion ya se encuentran en el buscador ")
+        '''else:
+            raise Exception("La palabra y la direccion ya se encuentran en el buscador ")'''
   
   '''FUNCION QUE AGREGA UNA PAGINA WEB RECIBIENDO POR PARAMETRO UNA LISTA DE PALABRAS'''      
-  def insertarPagina(self, listaDePalabras, paginaWeb):
-      if not listaDePalabras.estaVacia():
-          self.insertarPalabra(listaDePalabras.getDato(0), paginaWeb)
-          listaDePalabras.delete(0)
-          self.insertarPagina(listaDePalabras, paginaWeb)
+  def insertarPagina(self, listaDePalabras, paginaWeb, pos = 0):
+      if not listaDePalabras.estaVacia() and pos < listaDePalabras.len():
+          self.insertarPalabra(listaDePalabras.getDato(pos), paginaWeb)
+          pos+=1
+          self.insertarPagina(listaDePalabras, paginaWeb, pos)
   
   '''FUNCION QUE COMPARA ENTRE DOS LISTAS LAS SIMILITUDES. ESTO SE REALIZA PARA QUE EN LA LISTA RESULTANTE NO
   SOLO SE MUESTREN LAS PAGINAS QUE SE ENCUENTRAN EN LAS DOS LISTAS'''        
-  def buscarSimilitudes(self, listaPaginas, paginasEncontradas, listaSimilitud = ListaEnlazada()): 
-      if not paginasEncontradas.estaVacia():
-          pagina = paginasEncontradas.getDato(0)
+  def buscarSimilitudes(self, listaPaginas, paginasEncontradas, listaSimilitud = ListaEnlazada(), pos=0): 
+      if pos < paginasEncontradas.len():
+          pagina = paginasEncontradas.getDato(pos)
           if listaPaginas.buscarDato(pagina):
               listaSimilitud.append(pagina)
-          paginasEncontradas.delete(0)
-          self.buscarSimilitudes(listaPaginas, paginasEncontradas, listaSimilitud)
+          pos+=1
+          self.buscarSimilitudes(listaPaginas, paginasEncontradas, listaSimilitud, pos)
       return listaSimilitud
       
       
        
   '''FUNCION QUE RECIBIENDO UNA LISTA DE PALABRAS, DEVUELVE LAS PAGINAS DONDE SE ENCUENTRAN ESTAS PALABRAS'''
-  def buscarPalabras(self, listaPalabras, paginasEncontradas = None): 
-      if not listaPalabras.estaVacia(): 
-          nodoExistente =  self.existeNodo(listaPalabras.getDato(0))
-          listaPaginas = nodoExistente.listaPaginas.clonar()
-          if paginasEncontradas != None:
-              paginasEncontradas = self.buscarSimilitudes(listaPaginas, paginasEncontradas)
-          else:
-              paginasEncontradas = listaPaginas
-          listaPalabras.delete(0)
-          paginasEncontradas = self.buscarPalabras(listaPalabras, paginasEncontradas)
+  def buscarPalabras(self, listaPalabras, paginasEncontradas = ListaEnlazada(), vacio = False, pos = 0): 
+      if pos < listaPalabras.len() and vacio == False: 
+          nodoExistente =  self.existeNodo(listaPalabras.getDato(pos))
+          if nodoExistente != None:
+              listaPaginas = nodoExistente.listaPaginas.clonar()
+              if not paginasEncontradas.estaVacia():
+                  listaSimilitud = ListaEnlazada()
+                  paginasEncontradas = self.buscarSimilitudes(listaPaginas, paginasEncontradas, listaSimilitud)
+                  if paginasEncontradas.estaVacia():
+                      vacio = True
+              else:
+                  paginasEncontradas = listaPaginas.clonar()
+          '''listaPalabras.delete(0)'''
+          pos +=1
+          self.buscarPalabras(listaPalabras, paginasEncontradas, vacio, pos)
       return paginasEncontradas
   
   '''DEVUELVE LAS PALABRAS QUE CONTIENE ESA PAGINA WEB'''        
   def palabrasDePagina(self, dirWeb):
       if not self.estaVacio():
-          return self.raiz.palabrasDePagina(dirWeb)
+          listaPalabras = ListaEnlazada()
+          return self.raiz.palabrasDePagina(dirWeb, listaPalabras)
       else:
           print("El Arbol esta vacio")
   
@@ -174,7 +180,8 @@ class ArbolBuscador:
   QUE LA CANTIDAD RECIBIDA'''        
   def cantidadTotalPalabras(self, cantidad):
       if not self.estaVacio():
-          return self.raiz.cantidadPalabras(cantidad)
+          listaPalabras = ListaEnlazada()
+          return self.raiz.cantidadPalabras(cantidad, listaPalabras)
       else:
           print("El Arbol esta vacio")
           
@@ -212,7 +219,8 @@ class ArbolBuscador:
   '''DEVUELVE UNA LISTA DE PALABRAS, DONDE LA CANTIDAD DE PAGINAS QUE CONTENGA SEA MAYOR O IGUAL QUE LA CANTIDAD RECIBIDA'''
   def cantidadPalabrasMasUsadas(self, cantPaginas):
       if not self.estaVacio():
-          return self.raiz.cantidadPalabrasConPaginas(cantPaginas)
+          listaPalabras = ListaEnlazada()
+          return self.raiz.cantidadPalabrasConPaginas(cantPaginas, listaPalabras)
       else:
           print("El Arbol esta vacio")
   

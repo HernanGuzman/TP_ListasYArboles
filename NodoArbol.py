@@ -64,7 +64,7 @@ class NodoArbol:
       else:
           self.derecha = nuevoNodo
           
-  def palabrasDePagina(self, dirWeb, listaPalabras = ListaEnlazada()):
+  def palabrasDePagina(self, dirWeb, listaPalabras):
       if self.listaPaginas.buscarDato(dirWeb):
           listaPalabras.append(self.palabra) 
       if self.tieneIzquierda():
@@ -110,7 +110,7 @@ class NodoArbol:
   def predecesor(self):
     predecesor = None
     if self.tieneIzquierda():
-      predecesor = self.izquierdo.buscaMaximo()
+      predecesor = self.izquierda.buscaMaximo()
     return predecesor
 
   '''DEVUELVE LA LISTA DE NODOS QUE SE ENCUENTRAN EN EL NIVEL ENVIADO'''
@@ -192,7 +192,7 @@ class NodoArbol:
   2_ SI LA PALABRA CUMPLE CON LA CONDICION SE AGREGA A LA LISTA QUE SE DEVOLVERA
   3_ SE CONSULTA SI EL NODO TIENE IZQUIERDA PARA LLAMAR RECURSIVAMENTE A LA FUNCION Y CONTINUAR CON LA BUSQUEDA
   4_ IGUAL QUE EL ANTERIOR PERO CONSULTANDO SI TIENE DERECHA'''        
-  def cantidadPalabras(self, cant, listaPalabras = ListaEnlazada()):
+  def cantidadPalabras(self, cant, listaPalabras):
       if len(self.palabra) >= cant:
           listaPalabras.append(self.palabra)
       if self.tieneIzquierda():
@@ -206,7 +206,7 @@ class NodoArbol:
   2_ SI LA CANTIDAD DE PAGINAS CUMPLE CON LA CONDICION SE AGREGA A LA LISTA QUE SE DEVOLVERA
   3_ SE CONSULTA SI EL NODO TIENE IZQUIERDA PARA LLAMAR RECURSIVAMENTE A LA FUNCION Y CONTINUAR CON LA BUSQUEDA
   4_ IGUAL QUE EL ANTERIOR PERO CONSULTANDO SI TIENE DERECHA'''
-  def cantidadPalabrasConPaginas(self, cant, listaPalabras = ListaEnlazada()):
+  def cantidadPalabrasConPaginas(self, cant, listaPalabras):
       if self.listaPaginas.len() >= cant:
           listaPalabras.append(self.palabra)
       if self.tieneIzquierda():
