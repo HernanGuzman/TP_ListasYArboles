@@ -62,7 +62,7 @@ class ArbolBuscador:
         self.raiz.eliminar(palabra)
         
   def nivelALista(self, nivel):
-      listaNivel = []
+      listaNivel = ListaEnlazada()
       if not self.estaVacio():
           self.raiz.nivelALista(nivel, listaNivel)
       return listaNivel
@@ -75,9 +75,7 @@ class ArbolBuscador:
         existe = self.raiz.existeNodo(palabraBuscar)
     return existe
   
-  '''FUNCION QUE AGREGA LA DIRECCION WEB A LA LISTA DEL NODO'''      
-  def agregarDirWeb(self, lista, direccionWeb):
-    lista.append(direccionWeb)
+  
             
 
   def insertarPalabra(self, palabraNueva, direccionWeb):
@@ -88,7 +86,9 @@ class ArbolBuscador:
     if nodoExistente == None:
         '''GENERO LA LISTA NUEVA Y AGREGO LA DIRECCION WEB'''
         listaNueva = ListaEnlazada()
-        self.agregarDirWeb(listaNueva, direccionWeb)
+        ''''***************SOLUCION NO SE UTILIZA  AGREGAR DIR WEB*******************'''
+        listaNueva.append(direccionWeb)
+        
         nuevoNodo = NodoArbol(listaNueva, palabraNueva )
         if self.estaVacio():
             self.raiz = nuevoNodo
@@ -98,9 +98,9 @@ class ArbolBuscador:
         '''SI EL NODO YA SE ENCONTRABA EN EL ARBOL CONSULTO
         SI EN LA LISTA QUE POSEE SE ENCUENTRA LA PAGINA WEB'''
         if not nodoExistente.listaPaginas.buscarDato(direccionWeb):
-            self.agregarDirWeb(nodoExistente.listaPaginas, direccionWeb)
-        '''else:
-            raise Exception("La palabra y la direccion ya se encuentran en el buscador ")'''
+            ''''***********SOLUCION NO SE UTILIZA  AGREGAR DIR WEB*****************'''
+            nodoExistente.listaPaginas.append(direccionWeb)
+        
   
   '''FUNCION QUE AGREGA UNA PAGINA WEB RECIBIENDO POR PARAMETRO UNA LISTA DE PALABRAS'''      
   def insertarPagina(self, listaDePalabras, paginaWeb, pos = 0):
@@ -122,23 +122,13 @@ class ArbolBuscador:
       
       
        
-  '''FUNCION QUE RECIBIENDO UNA LISTA DE PALABRAS, DEVUELVE LAS PAGINAS DONDE SE ENCUENTRAN ESTAS PALABRAS'''
-  def buscarPalabras(self, listaPalabras, paginasEncontradas = ListaEnlazada(), vacio = False, pos = 0): 
-      if pos < listaPalabras.len() and vacio == False: 
-          nodoExistente =  self.existeNodo(listaPalabras.getDato(pos))
-          if nodoExistente != None:
-              listaPaginas = nodoExistente.listaPaginas.clonar()
-              if not paginasEncontradas.estaVacia():
-                  listaSimilitud = ListaEnlazada()
-                  paginasEncontradas = self.buscarSimilitudes(listaPaginas, paginasEncontradas, listaSimilitud)
-                  if paginasEncontradas.estaVacia():
-                      vacio = True
-              else:
-                  paginasEncontradas = listaPaginas.clonar()
-          '''listaPalabras.delete(0)'''
-          pos +=1
-          self.buscarPalabras(listaPalabras, paginasEncontradas, vacio, pos)
-      return paginasEncontradas
+  
+  def buscarPalabras(self, listaPalabras): 
+      if not self.estaVacio():
+          listaPaginas = ListaEnlazada()
+          return self.raiz.buscarPalabras(listaPalabras, listaPaginas)
+      else:
+          print("El Arbol esta vacio")
   
   '''DEVUELVE LAS PALABRAS QUE CONTIENE ESA PAGINA WEB'''        
   def palabrasDePagina(self, dirWeb):
@@ -185,36 +175,14 @@ class ArbolBuscador:
       else:
           print("El Arbol esta vacio")
           
-  '''FUNCION QUE COMPARA QUE ENTRE DOS LISTAS NO SE REPITAN VALORES '''
-  def buscarPaginasNoRepetidas(self, listaPaginas, paginasEncontradas): 
-      if not paginasEncontradas.estaVacia():
-          pagina = paginasEncontradas.getDato(0)
-          if not listaPaginas.buscarDato(pagina):
-              listaPaginas.append(pagina)
-          paginasEncontradas.delete(0)
-          self.buscarSimilitudes(listaPaginas, paginasEncontradas)
-      return listaPaginas
-  
-  '''RECIBE UNA LISTA DE PALABRAS Y BUSCA LAS PAGINAS DE CADA UNA'''
-  def buscarPaginas(self, listaPalabras, paginasEncontradas = None): 
-      if not listaPalabras.estaVacia(): 
-          nodoExistente =  self.existeNodo(listaPalabras.getDato(0))
-          listaPaginas = nodoExistente.listaPaginas.clonar()
-          if paginasEncontradas != None:
-              paginasEncontradas = self.buscarPaginasNoRepetidas(listaPaginas, paginasEncontradas)
-          else:
-              paginasEncontradas = listaPaginas.clonar()
-          listaPalabras.delete(0)
-          paginasEncontradas = self.buscarPaginas(listaPalabras, paginasEncontradas)
-      return paginasEncontradas
+       
   
   '''FUNCION QUE DEVUELVE UNA LISTA CON LAS PAGINAS QUE SE ENCUENTRAN EN EL NIVEL RECIBIDO '''
   def paginasEnNivel(self, nivel):
-      palabras = self.nivelALista(nivel)
-      listaPalabras = ListaEnlazada()
-      for palabra in palabras:
-          listaPalabras.append(palabra)
-      return self.buscarPaginas(listaPalabras)
+      paginas = self.nivelALista(nivel)
+      paginas = paginas.sacarRepetidas()
+      return paginas
+      
   
   '''DEVUELVE UNA LISTA DE PALABRAS, DONDE LA CANTIDAD DE PAGINAS QUE CONTENGA SEA MAYOR O IGUAL QUE LA CANTIDAD RECIBIDA'''
   def cantidadPalabrasMasUsadas(self, cantPaginas):
@@ -227,7 +195,8 @@ class ArbolBuscador:
   '''DEVUELVE LAS PALABRAS DE LOS SUBNODOS QUE COMIENCEN CON MAYUSCULA'''        
   def internasMayusculasAlfabetico(self):
        if not self.estaVacio():
-          return self.raiz.internasMayusculas()
+           listaPalabras = ListaEnlazada()
+           return self.raiz.internasMayusculas(listaPalabras)
        else:
           print("El Arbol esta vacio")
       

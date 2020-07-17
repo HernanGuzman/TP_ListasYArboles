@@ -26,16 +26,16 @@ class NodoArbol:
 
   def inOrden(self):
     if self.tieneIzquierda():
-      self.izquierda.preOrden()
+      self.izquierda.inOrden()
     print(self.palabra)
     if self.tieneDerecha():
-      self.derecha.preOrden()
+      self.derecha.inOrden()
 
   def postOrden(self):
     if self.tieneIzquierda():
-      self.izquierda.preOrden()
+      self.izquierda.postOrden()
     if self.tieneDerecha():
-      self.derecha.preOrden()
+      self.derecha.postOrden()
     print(self.palabra)
     
   def existeNodo(self, palabraBuscar):
@@ -116,7 +116,8 @@ class NodoArbol:
   '''DEVUELVE LA LISTA DE NODOS QUE SE ENCUENTRAN EN EL NIVEL ENVIADO'''
   def nivelALista(self, nivel, listaNivel, nivelNodo = 0):
     if nivelNodo == nivel:
-      listaNivel.append(self.palabra)
+        for pos in range(self.listaPaginas.len()):
+            listaNivel.append(self.listaPaginas.getDato(pos))
     else:
       if self.tieneDerecha():
         self.derecha.nivelALista(nivel, listaNivel, nivelNodo+1)
@@ -215,25 +216,28 @@ class NodoArbol:
           self.derecha.cantidadPalabrasConPaginas(cant, listaPalabras)
       return listaPalabras.len()
   
-  '''FUNCION QUE DEVUELVE LOS SUBARBOLES EN LOS QUE LA PALABRA COMIENZA CON MAYUSCULA
-  1_ CONSULTA SI EL NODO NO ES UNA HOJA
-  2_ SI EL NODO NO ES UNA HOJA, TOMO LA PRIMERA LETRA Y CONSULTO SI ESTA EN MAYUSCULA
-  3_ SI ESTA EN MAYUSCULA LO AGREGO A LA LISTA QUE SE DEVOLVERA
-  4_ SE CONSULTA SI EL NODO TIENE IZQUIERDA PARA LLAMAR RECURSIVAMENTE A LA FUNCION Y CONTINUAR CON LA BUSQUEDA
-  5_ IGUAL QUE EL ANTERIOR PERO CONSULTANDO SI TIENE DERECHA'''
-  def internasMayusculas(self, listaPalabras = ListaEnlazada()):
-      if not self.esHoja():
-          '''TOMO EL PRIMER CARACTER PARA COMPARAR'''
-          letra = self.palabra[0]
-          if letra.isupper():
-              listaPalabras.appendOrd(self.palabra)
+  
+  
+  '''********************CORRECCION**********************'''
+  def internasMayusculas(self, listaOrdenada):
       if self.tieneIzquierda():
-          self.izquierda.internasMayusculas(listaPalabras)
+          self.izquierda.internasMayusculas(listaOrdenada)
+      letra = self.palabra[0]
+      if not self.esHoja() and letra.isupper():
+          listaOrdenada.append(self.palabra)
       if self.tieneDerecha():
-          self.derecha.internasMayusculas(listaPalabras)
-      return listaPalabras
-  
-  
+          self.derecha.internasMayusculas(listaOrdenada)
+      return listaOrdenada
+  '''********************CORRECCION**********************'''
+  def buscarPalabras(self, listaPalabras, paginasEncontradas):
+      if self.tieneIzquierda():
+          self.izquierda.buscarPalabras(listaPalabras, paginasEncontradas)
+      if listaPalabras.buscarDato(self.palabra):
+          for pos in range(self.listaPaginas.len()):
+              paginasEncontradas.append(self.listaPaginas.getDato(pos))
+      if self.tieneDerecha():
+          self.derecha.buscarPalabras(listaPalabras, paginasEncontradas)
+      return paginasEncontradas
       
      
 

@@ -69,8 +69,20 @@ class ListaEnlazada:
     
     '''BUSCA SI UN DATO SE ENCUENTRA EN LA LISTA'''
     def buscarDato(self, datoABuscar):
+        encontrado = None
         if not self.estaVacia():
-            return self.primero.buscarDato(datoABuscar)
+            encontrado =  self.primero.buscarDato(datoABuscar)
+        return encontrado
+            
+    def sacarRepetidas(self):
+        listaAux = ListaEnlazada()
+        for pos in range(self.len()):
+            if listaAux.buscarDato(self.getDato(pos)) == None:
+                listaAux.append(self.getDato(pos))
+        return listaAux
+                
+                
+        
     
     '''ELIMINA UN DATO EN LA LISTA, PASANDO EL DATO QUE SE DESEA ELIMINAR'''    
     def eliminarDato(self, datoAEliminar):
